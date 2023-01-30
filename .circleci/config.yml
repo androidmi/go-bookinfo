@@ -46,6 +46,7 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build
+      - productpage
 command:
   build-service:
     description: "Build a service and push image to dockerhub"
