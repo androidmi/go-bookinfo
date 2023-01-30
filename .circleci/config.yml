@@ -32,7 +32,13 @@ jobs:
             # gotestsum --junitfile /tmp/test-reports/unit-tests.xml
       - store_test_results:
           path: /tmp/test-reports
-
+  productpage:
+    docker:
+      - image: circleci/golang:1.15.8
+    working_directory: ~/go-bookinfo/src/productpage
+    steps:
+      - build-service:
+          service-name: "productpage" 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -40,3 +46,4 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build
+
