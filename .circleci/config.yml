@@ -37,16 +37,21 @@ jobs:
       - image: circleci/golang:1.15.8
     working_directory: ~/go-bookinfo/src/productpage
     steps:
-      - build-service:
-          service-name: "productpage" 
+      # git pull
+      - checkout:
+          path: ~/go-bookinfo
+
+      - run: go mod download
+      - run: go build .
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - build
       - productpage
+
 command:
   build-service:
     description: "Build a service and push image to dockerhub"
@@ -63,10 +68,7 @@ command:
       - save_cache:
           paths:
             - ~/.go
-          key: << parameters.service-name >>-{{ checksum "pom.xml"}}
-
-      # package into a jar and build image
-      - run: mvn clean package -Ddocker.image.tag=Build-${CIRCLE_BUILD_NUM}-CI -Ddockerfile.maven.settings.auth=false
+          key: << parameters.service-name >>-{{ checksum "go.sum"}}
 
       # store raw content of src code
       - store_artifacts:
