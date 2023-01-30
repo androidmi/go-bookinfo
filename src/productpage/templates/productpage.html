@@ -1,0 +1,147 @@
+{% extends "bootstrap/base.html" %}
+{% block metas %}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% endblock %}
+
+{% block styles %}
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="static/bootstrap/css/bootstrap-theme.min.css">
+{% endblock %}
+{% block scripts %}
+<!-- Latest compiled and minified JavaScript -->
+<script src="static/jquery.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="static/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  $('#login-modal').on('shown.bs.modal', function () {
+    $('#username').focus();
+  });
+</script>
+{% endblock %}
+  <title>Simple Bookstore App</title>
+</head>
+<body>
+{% block content %}
+
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">BookInfo Sample</a>
+    </div>
+    {{ if eq .User "" }}
+    <p class="navbar-text navbar-right">
+      <i class="glyphicon glyphicon-user" aria-hidden="true"></i>
+      <span style="padding-left: 5px;">{{ .User }} ( <a href="logout">sign out</a> )</span>
+    </p>
+    {{ else }}
+    <button type="button" class="btn btn-default navbar-btn navbar-right" data-toggle="modal" href="#login-modal">Sign
+      in</button>
+    {{ end }}
+  </div>
+</nav>
+
+<div id="login-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Please sign in</h4>
+      </div>
+      <div class="modal-body">
+        <form method="post" action='login' name="login_form">
+          <p><input type="text" class="form-control" name="username" id="username" placeholder="User Name"></p>
+          <p><input type="password" class="form-control" name="passwd" placeholder="Password"></p>
+          <p>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </p>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <h3 class="text-center text-primary">{{ .Product.Title }}</h3>
+      Summary: {{ htmlRender .Product.DescriptionHtml }}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      {{ if eq .DetailsStatus 200 }}
+      <h4 class="text-center text-primary">Book Details</h4>
+      <dl>
+        <dt>Type:</dt>{{ .Details.Type }}
+        <dt>Pages:</dt>{{ .Details.Pages }}
+        <dt>Publisher:</dt>{{ .Details.Publisher }}
+        <dt>Language:</dt>{{ .Details.Language }}
+        <dt>ISBN-10:</dt>{{ .Details.Isbn10 }}
+        <dt>ISBN-13:</dt>{{ .Details.Isbn13}}
+      </dl>
+      {{ else }}
+      <h4 class="text-center text-primary">Error fetching product details!</h4>
+      {{ if eq .Details ""}}
+      <p>{{ .Details.Error }}</p>
+      {{ end }}
+      {{ end }}
+    </div>
+
+    <div class="col-md-6">
+      {{ if eq .ReviewsStatus 200 }}
+      <h4 class="text-center text-primary">Book Reviews</h4>
+      {{ range .Reviews.Reviewers }}
+      <blockquote>
+        <p>{{ .Text }}</p>
+        <small>{{ .Reviewer }}</small>
+        {{ with .Rating }}
+        {{ with .Stars }}
+        <font color="{{ .Rating.Color }}">
+          <!-- full stars: -->
+          {{ range rateLoop .Review.Rating.Stars }}
+          <span class="glyphicon glyphicon-star"></span>
+          {{ end }}
+          <!-- empty stars: -->
+          {{ range rateLoop reduce 5 .Review.Rating.Stars }}
+          <span class="glyphicon glyphicon-star-empty"></span>
+          {{ end }}
+        </font>
+        {{else}}
+        {{with .Error}}
+        <p><i>{{ . }}</i></p>
+        {{end}}
+        {{end}}
+        {{end}}
+      </blockquote>
+      {{ end }}
+      <dl>
+        <dt>Reviews served by:</dt>
+        <u>{{ .Reviews.PodName }}</u>
+        {{ if ne .Reviews.ClusterName "null" }}
+        on cluster <u>{{ .Reviews.ClusterName }}</u>
+        {{ end }}
+      </dl>
+      {{ else }}
+      <h4 class="text-center text-primary">Error fetching product reviews!</h4>
+      {{ if ne .Reviews "" }}
+      <p>{{ .Reviews.Error }}</p>
+      {{ end }}
+      {{ end }}
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{% endblock %}
