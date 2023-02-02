@@ -34,7 +34,7 @@ jobs:
           path: /tmp/test-reports
   productpage:
     docker:
-      - image: circleci/golang:1.15.8
+      - image: golang:1.18.10-bullseye
     working_directory: ~/go-bookinfo/src/details
     steps:
       - build-service:
