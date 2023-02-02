@@ -58,7 +58,7 @@ commands:
       # git pull
       - checkout:
           path: ~/go-bookinfo
-
+      - run: go mod tidy
       - run: go mod download
       - run: go build
 
