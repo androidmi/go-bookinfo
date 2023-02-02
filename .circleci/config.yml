@@ -35,7 +35,7 @@ jobs:
   productpage:
     docker:
       - image: circleci/golang:1.15.8
-    working_directory: ~/go-bookinfo/src/productpage
+    working_directory: ~/go-bookinfo/src/details
     steps:
       - build-service:
           service-name: "productpage" 
